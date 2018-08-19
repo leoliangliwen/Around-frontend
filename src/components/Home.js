@@ -2,12 +2,14 @@ import React from 'react';
 import {Tabs, Button, Spin, message} from 'antd';
 import {API_ROOT, GEO_OPTIONS, POS_KEY, TOKEN_KEY, AUTH_PREFIX} from '../constants'
 import $ from 'jquery';
+import {Gallery} from './Gallery'
 
 export class Home extends React.Component {
 
     state = {
         loadingGeoLocation: false,
         error: '',
+        posts: '',
     }
 
 
@@ -47,7 +49,20 @@ export class Home extends React.Component {
             return <div>{this.state.error}</div>
         } else if (this.state.loadingGeoLocation) {
             return <Spin tip='Loading...'/>
-        } else {
+        } else if (this.state.posts && this.state.posts.length > 0) {
+            const images = this.state.posts.map((post) => {
+                return {
+                    user: post.user,
+                    src: post.url,
+                    thumbnail: post.url,
+                    thumbnailWidth: 400,
+                    thumbnailHeight: 300,
+                    caption: post.message,
+                }
+            });
+            return <Gallery images = {images}/>
+        }
+        else {
             return <div>'Image Post'</div>;
         }
     }
