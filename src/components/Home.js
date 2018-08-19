@@ -1,11 +1,12 @@
 import React from 'react';
-import { Tabs, Button } from 'antd';
+import { Tabs, Button, Spin } from 'antd';
 import {GEO_OPTIONS, POS_KEY} from '../constants'
 
 export class Home extends React.Component {
 
     state = {
         loadingGeoLocation: false,
+        error: '',
     }
 
 
@@ -23,7 +24,7 @@ export class Home extends React.Component {
                 GEO_OPTIONS,
             );
         } else {
-            this.setState({loadingGeoLocation: false});
+            this.setState({loadingGeoLocation: false, error: "Your browser does not support geolocation."});
         }
     }
 
@@ -33,8 +34,21 @@ export class Home extends React.Component {
         const { latitude, longitude } = position.coords;
         localStorage.setItem(POS_KEY, JSON.stringify({lat: latitude, lon: longitude}));
     }
+
     onFailedLoadGeolocation = () => {
         console.log("Fail to load geo location.");
+        this.setState({loadingGeoLocation: false, error: "Fail to load geolocation."});
+    }
+
+    getResult = () => {
+        if (this.state.error) {
+            return <div>{this.state.error}</div>
+        } else if (this.state.loadingGeoLocation) {
+            return <Spin tip='Loading...'/>
+        } else {
+            return <div>'Image Post'</div>;
+        }
+
     }
 
     render() {
@@ -43,7 +57,7 @@ export class Home extends React.Component {
         return (
             <Tabs tabBarExtraContent={operations} className = "main-tabs">
                 <TabPane tab="Image Post" key="1">
-                    {this.state.loadingGeoLocation? 'Loading...': 'Image Post'}
+                    {this.getResult()}
                 </TabPane>
                 <TabPane tab="Video Posts" key="2">Video Posts</TabPane>
                 <TabPane tab="Map" key="3">Map</TabPane>
