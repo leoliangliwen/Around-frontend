@@ -8,6 +8,7 @@ export class Home extends React.Component {
 
     state = {
         loadingGeoLocation: false,
+        loadingPosts: false,
         error: '',
         posts: '',
     }
@@ -48,7 +49,7 @@ export class Home extends React.Component {
         if (this.state.error) {
             return <div>{this.state.error}</div>
         } else if (this.state.loadingGeoLocation) {
-            return <Spin tip='Loading...'/>
+            return <Spin tip='Loading Geolocation...'/>
         } else if (this.state.posts && this.state.posts.length > 0) {
             const images = this.state.posts.map((post) => {
                 return {
@@ -62,12 +63,13 @@ export class Home extends React.Component {
             });
             return <Gallery images = {images}/>
         }
-        else {
-            return <div>'Image Post'</div>;
+        else if (this.state.loadingPosts){
+            return <Spin tip='Loading Posts...'/>
         }
     }
 
     loadNearbyPost() {
+        this.setState({ loadingPost: true});
         const { lat, lon } = JSON.parse(localStorage.getItem(POS_KEY));
         const token = localStorage.getItem(TOKEN_KEY);
         this.setState({ loadingPosts: true, error: ''});
@@ -78,10 +80,17 @@ export class Home extends React.Component {
                 Authorization: `${AUTH_PREFIX} ${token}`
             },
         }).then((response) => {
-            this.setState({ posts: response, loadingPosts: false, error: '' });
+            this.setState({
+                posts: response,
+                loadingPosts: false,
+                error: '',
+                loadingPost: false});
             console.log(response);
         }, (error) => {
-            this.setState({ loadingPosts: false, error: error.responseText });
+            this.setState({
+                loadingPosts: false,
+                error: error.responseText,
+                loadingPost: false });
             console.log(error);
         }).catch((error) => {
             console.log(error);
