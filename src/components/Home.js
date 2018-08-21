@@ -1,5 +1,5 @@
 import React from 'react';
-import {Tabs, Button, Spin} from 'antd';
+import {Tabs, Spin} from 'antd';
 import {API_ROOT, GEO_OPTIONS, POS_KEY, TOKEN_KEY, AUTH_PREFIX} from '../constants'
 import $ from 'jquery';
 import {Gallery} from './Gallery'
@@ -100,7 +100,7 @@ export class Home extends React.Component {
 
     render() {
         const TabPane = Tabs.TabPane;
-        const operations = <CreatePostButton type="primary">Create New Post</CreatePostButton>;
+        const operations = <CreatePostButton type="primary"/>;
         return (
             <Tabs tabBarExtraContent={operations} className = "main-tabs">
                 <TabPane tab="Image Post" key="1">
