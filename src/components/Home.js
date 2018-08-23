@@ -4,6 +4,7 @@ import {API_ROOT, GEO_OPTIONS, POS_KEY, TOKEN_KEY, AUTH_PREFIX} from '../constan
 import $ from 'jquery';
 import {Gallery} from './Gallery'
 import {CreatePostButton} from './CreatePostButton'
+import {WrappedAroundMap} from './AroundMap'
 
 export class Home extends React.Component {
 
@@ -107,7 +108,14 @@ export class Home extends React.Component {
                     {this.getResult()}
                 </TabPane>
                 <TabPane tab="Video Posts" key="2">Video Posts</TabPane>
-                <TabPane tab="Map" key="3">Map</TabPane>
+                <TabPane tab="Map" key="3">
+                    <WrappedAroundMap
+                        googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyD3CEh9DXuyjozqptVB5LA-dN7MxWWkr9s&v=3.exp&libraries=geometry,drawing,places"
+                        loadingElement={<div style={{ height: `100%` }} />}
+                        containerElement={<div style={{ height: `400px` }} />}
+                        mapElement={<div style={{ height: `100%` }} />}
+                    />
+                </TabPane>
             </Tabs>
         );
     }
