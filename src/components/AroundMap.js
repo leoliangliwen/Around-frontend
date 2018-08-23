@@ -3,19 +3,20 @@ import {
     withScriptjs,
     withGoogleMap,
     GoogleMap,
-    Marker,
 } from 'react-google-maps';
+import {AroundMarket} from './AroundMarket'
 
 class AroundMap extends React.Component{
+
     render() {
         return (
             <GoogleMap
                 defaultZoom={8}
-                defaultCenter={{ lat: -34.397, lng: 150.644 }}
+                defaultCenter={{ lat: -34.797, lng: 150.744 }}
             >
-                <Marker
-                    position={{ lat: -34.397, lng: 150.644 }}
-                />
+                <AroundMarket position = {{lat: -34.897, lng: 150.944 }}/>
+                <AroundMarket position = {{lat: -34.697, lng: 150.644 }}/>
+
             </GoogleMap>
         );
 
