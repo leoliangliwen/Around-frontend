@@ -4,7 +4,7 @@ import {
     InfoWindow,
 } from 'react-google-maps';
 
-export class AroundMarket extends React.Component {
+export class AroundMarker extends React.Component {
     state = {
         isOpen: false,
     }
@@ -16,14 +16,18 @@ export class AroundMarket extends React.Component {
         } );
     }
     render () {
+        const {location, url, message} = this.props.post;
         return (
             <Marker
-                position={this.props.position}
+                position={{lat: location.lat, lng: location.lon}}
                 onClick={this.onToggleOpen}
             >
                 {this.state.isOpen ?
                     <InfoWindow onCloseClick={this.onToggleOpen}>
-                        <div>Info Window</div>
+                        <div>
+                            <img className="around-marker-image" src={url} alt={message}/>
+                            <p></p>
+                        </div>
                     </InfoWindow>: null
                 }
             </Marker>

@@ -4,19 +4,23 @@ import {
     withGoogleMap,
     GoogleMap,
 } from 'react-google-maps';
-import {AroundMarket} from './AroundMarket'
+import {AroundMarker} from './AroundMarker'
+import {POS_KEY} from '../constants'
 
 class AroundMap extends React.Component{
 
     render() {
+        const position = JSON.parse(localStorage.getItem(POS_KEY));
         return (
             <GoogleMap
-                defaultZoom={8}
-                defaultCenter={{ lat: -34.797, lng: 150.744 }}
+                defaultZoom={11}
+                defaultCenter={{ lat: position.lat, lng: position.lon }}
             >
-                <AroundMarket position = {{lat: -34.897, lng: 150.944 }}/>
-                <AroundMarket position = {{lat: -34.697, lng: 150.644 }}/>
-
+                {
+                    this.props.posts.map((post) =>{
+                        return <AroundMarker post = {post} key = {post.url}/>
+                    })
+                }
             </GoogleMap>
         );
 
