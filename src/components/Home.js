@@ -1,5 +1,5 @@
 import React from 'react';
-import {Tabs, Spin} from 'antd';
+import {Tabs, Spin, Row, Col, Radio} from 'antd';
 import {API_ROOT, GEO_OPTIONS, POS_KEY, TOKEN_KEY, AUTH_PREFIX} from '../constants'
 import $ from 'jquery';
 import {Gallery} from './Gallery'
@@ -47,28 +47,60 @@ export class Home extends React.Component {
         this.setState({loadingGeoLocation: false, error: "Fail to load geolocation."});
     }
 
-    getResult = () => {
+
+    getPanelContent = (type) => {
         if (this.state.error) {
-            return <div>{this.state.error}</div>
+            return <div>{this.state.error}</div>;
         } else if (this.state.loadingGeoLocation) {
-            return <Spin tip='Loading Geolocation...'/>
-        } else if (this.state.posts && this.state.posts.length > 0) {
-            const images = this.state.posts.map((post) => {
+            return <Spin tip="Loading geo location..."/>;
+        } else if (this.state.loadingPosts) {
+            return <Spin tip="Loading posts..."/>;
+        } else if (this.state.posts) {
+            return type === 'images' ? this.getImagePosts() : this.getVideoPosts();
+        } else {
+            return <div>Nothing found...</div>;
+        }
+    }
+
+
+    getImagePosts = () => {
+        const images = this.state.posts
+            .filter((post) => post.type === 'image')
+            .map((post) => {
                 return {
                     user: post.user,
                     src: post.url,
                     thumbnail: post.url,
+                    caption: post.message,
                     thumbnailWidth: 400,
                     thumbnailHeight: 300,
-                    caption: post.message,
-                }
+                };
             });
-            return <Gallery images = {images}/>
-        }
-        else if (this.state.loadingPosts){
-            return <Spin tip='Loading Posts...'/>
-        }
+        return (
+            <div>
+                <Gallery images={images}/>
+            </div>
+        );
     }
+
+    getVideoPosts = () => {
+        return (
+            <Row gutter={32}>
+                {
+                    this.state.posts
+                        .filter((post) => post.type === 'video')
+                        .map((post) => {
+                            return (
+                                <Col span={6} >
+                                    <video src={post.url} key={post.url} controls className="video-block"/>
+                                    <p>{post.user}: {post.message}</p>
+                                </Col>);
+                        })
+                }
+            </Row>
+        );
+    }
+
 
     loadNearbyPosts = (location, range) => {
         this.setState({ loadingPosts: true, error: '' });
@@ -97,9 +129,11 @@ export class Home extends React.Component {
         return (
             <Tabs tabBarExtraContent={createPostButton} className = "main-tabs">
                 <TabPane tab="Image Post" key="1">
-                    {this.getResult()}
+                    {this.getPanelContent('images')}
                 </TabPane>
-                <TabPane tab="Video Posts" key="2">Video Posts</TabPane>
+                <TabPane tab="Video Posts" key="2">
+                    {this.getPanelContent('videos')}
+                </TabPane>
                 <TabPane tab="Map" key="3">
                     <WrappedAroundMap
                         googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyD3CEh9DXuyjozqptVB5LA-dN7MxWWkr9s&v=3.exp&libraries=geometry,drawing,places"
