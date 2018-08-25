@@ -56,7 +56,7 @@ export class Home extends React.Component {
         } else if (this.state.loadingPosts) {
             return <Spin tip="Loading posts..."/>;
         } else if (this.state.posts) {
-            return type === 'images' ? this.getImagePosts() : this.getVideoPosts();
+            return type === 'image' ? this.getImagePosts() : this.getVideoPosts();
         } else {
             return <div>Nothing found...</div>;
         }
@@ -129,10 +129,10 @@ export class Home extends React.Component {
         return (
             <Tabs tabBarExtraContent={createPostButton} className = "main-tabs">
                 <TabPane tab="Image Post" key="1">
-                    {this.getPanelContent('images')}
+                    {this.getPanelContent('image')}
                 </TabPane>
                 <TabPane tab="Video Posts" key="2">
-                    {this.getPanelContent('videos')}
+                    {this.getPanelContent('video')}
                 </TabPane>
                 <TabPane tab="Map" key="3">
                     <WrappedAroundMap
