@@ -70,30 +70,22 @@ export class Home extends React.Component {
         }
     }
 
-    loadNearbyPosts() {
-        this.setState({ loadingPost: true});
-        const { lat, lon } = JSON.parse(localStorage.getItem(POS_KEY));
-        const token = localStorage.getItem(TOKEN_KEY);
-        this.setState({ loadingPosts: true, error: ''});
+    loadNearbyPosts = (location, range) => {
+        this.setState({ loadingPosts: true, error: '' });
+        const { lat, lon } = location ? location : JSON.parse(localStorage.getItem(POS_KEY));
+        const radius = range ? range : 20;
         $.ajax({
-            url: `${API_ROOT}/search?lat=${lat}&lon=${lon}&range=20000`,
+            url: `${API_ROOT}/search?lat=${lat}&lon=${lon}&range=${radius}`,
             method: 'GET',
             headers: {
-                Authorization: `${AUTH_PREFIX} ${token}`
+                Authorization: `${AUTH_PREFIX} ${localStorage.getItem(TOKEN_KEY)}`,
             },
         }).then((response) => {
-            this.setState({
-                posts: response,
-                loadingPosts: false,
-                error: '',
-                loadingPost: false});
             console.log(response);
-        }, (error) => {
-            this.setState({
-                loadingPosts: false,
-                error: error.responseText,
-                loadingPost: false });
-            console.log(error);
+            this.setState({ posts: response || [],loadingPosts: false, error: '' });
+        }, (response) => {
+            console.log(response.responseText);
+            this.setState({ loadingPosts: false, error: 'Failed to load posts!' });
         }).catch((error) => {
             console.log(error);
         });
@@ -112,9 +104,10 @@ export class Home extends React.Component {
                     <WrappedAroundMap
                         googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyD3CEh9DXuyjozqptVB5LA-dN7MxWWkr9s&v=3.exp&libraries=geometry,drawing,places"
                         loadingElement={<div style={{ height: `100%` }} />}
-                        containerElement={<div style={{ height: `400px` }} />}
+                        containerElement={<div style={{ height: `600px` }} />}
                         mapElement={<div style={{ height: `100%` }} />}
                         posts={this.state.posts}
+                        loadNearbyPosts={this.loadNearbyPosts}
                     />
                 </TabPane>
             </Tabs>
