@@ -6,6 +6,8 @@ import {Gallery} from './Gallery'
 import {CreatePostButton} from './CreatePostButton'
 import {WrappedAroundMap} from './AroundMap'
 
+const RadioGroup = Radio.Group;
+
 export class Home extends React.Component {
 
     state = {
@@ -13,6 +15,7 @@ export class Home extends React.Component {
         loadingPosts: false,
         error: '',
         posts: '',
+        topic: 'around',
     }
 
 
@@ -101,17 +104,18 @@ export class Home extends React.Component {
         );
     }
 
-
     loadNearbyPosts = (location, range) => {
         this.setState({ loadingPosts: true, error: '' });
         const { lat, lon } = location ? location : JSON.parse(localStorage.getItem(POS_KEY));
         const radius = range ? range : 20;
+        const token = localStorage.getItem(TOKEN_KEY);
+        const endPoint = this.state.topic === 'around' ? 'search' : 'cluster';
         $.ajax({
-            url: `${API_ROOT}/search?lat=${lat}&lon=${lon}&range=${radius}`,
+            url: `${API_ROOT}/${endPoint}?lat=${lat}&lon=${lon}&range=${radius}&term=${this.state.topic}`,
             method: 'GET',
             headers: {
-                Authorization: `${AUTH_PREFIX} ${localStorage.getItem(TOKEN_KEY)}`,
-            },
+                Authorization: `${AUTH_PREFIX} ${token}`,
+            }
         }).then((response) => {
             console.log(response);
             this.setState({ posts: response || [],loadingPosts: false, error: '' });
@@ -123,28 +127,39 @@ export class Home extends React.Component {
         });
     }
 
+    onTopicChange = (e) => {
+        this.setState({ topic: e.target.value }, this.loadNearbyPosts);
+    }
+
     render() {
         const TabPane = Tabs.TabPane;
         const createPostButton = <CreatePostButton loadNearbyPosts={this.loadNearbyPosts}/>;
         return (
-            <Tabs tabBarExtraContent={createPostButton} className = "main-tabs">
-                <TabPane tab="Image Post" key="1">
-                    {this.getPanelContent('image')}
-                </TabPane>
-                <TabPane tab="Video Posts" key="2">
-                    {this.getPanelContent('video')}
-                </TabPane>
-                <TabPane tab="Map" key="3">
-                    <WrappedAroundMap
-                        googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyD3CEh9DXuyjozqptVB5LA-dN7MxWWkr9s&v=3.exp&libraries=geometry,drawing,places"
-                        loadingElement={<div style={{ height: `100%` }} />}
-                        containerElement={<div style={{ height: `600px` }} />}
-                        mapElement={<div style={{ height: `100%` }} />}
-                        posts={this.state.posts}
-                        loadNearbyPosts={this.loadNearbyPosts}
-                    />
-                </TabPane>
-            </Tabs>
+            <div>
+                <RadioGroup className="topic-radio-group" value={this.state.topic} onChange={this.onTopicChange}>
+                    <Radio value="around">Posts Around My Position</Radio>
+                    <Radio value="face">Faces Around The World</Radio>
+                </RadioGroup>
+
+                <Tabs tabBarExtraContent={createPostButton} className = "main-tabs">
+                    <TabPane tab="Image Post" key="1">
+                        {this.getPanelContent('image')}
+                    </TabPane>
+                    <TabPane tab="Video Posts" key="2">
+                        {this.getPanelContent('video')}
+                    </TabPane>
+                    <TabPane tab="Map" key="3">
+                        <WrappedAroundMap
+                            googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyD3CEh9DXuyjozqptVB5LA-dN7MxWWkr9s&v=3.exp&libraries=geometry,drawing,places"
+                            loadingElement={<div style={{ height: `100%` }} />}
+                            containerElement={<div style={{ height: `600px` }} />}
+                            mapElement={<div style={{ height: `100%` }} />}
+                            posts={this.state.posts}
+                            loadNearbyPosts={this.loadNearbyPosts}
+                        />
+                    </TabPane>
+                </Tabs>
+            </div>
         );
     }
 }
